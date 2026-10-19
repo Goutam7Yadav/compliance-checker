@@ -1,55 +1,27 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
 import './App.css'
+import heroImg from './assets/hero.png'
+import { useNavigate } from "react-router-dom"
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [users, setUsers] = useState([])
-
-  // Fetch users from backend when component loads
-  useEffect(() => {
-    axios.get("http://localhost:5000/api/users")
-      .then(res => setUsers(res.data))
-      .catch(err => console.error(err))
-  }, [])
+  const navigate = useNavigate();
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>Edit <code>src/App.jsx</code> and save to test <code>HMR</code></p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <section id="landing">
+      <div className="hero">
+        <img src={heroImg} alt="Compliance Checker Logo" width="170" height="179" />
+      </div>
 
-      {/* Show users fetched from backend */}
-      <section>
-        <h2>Users from Backend</h2>
-        <ul>
-  {users.map(user => (
-    <li key={user.id}>
-      {user.username} — Role: {user.role}
-    </li>
-  ))}
-</ul>
+      <h1>Compliance Checker</h1>
+      <p>
+        Scan packaged commodities and ensure compliance with 
+        Legal Metrology (Packaged Commodities) Rules, 2011.
+      </p>
 
-      </section>
-    </>
+      <div className="buttons">
+        <button onClick={() => navigate("/login")}>Login</button>
+        <button onClick={() => navigate("/register")}>Register</button>
+      </div>
+    </section>
   )
 }
 
