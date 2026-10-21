@@ -45,31 +45,44 @@ app.post('/api/products', (req, res) => {
 
 // Register
 app.post('/api/register', (req, res) => {
-  const { fullName, username, password, role } = req.body;
+  const { full_name, email, username, password, role } = req.body;
+
+  // Normalize role casing to match ENUM
+  let roleValue;
+  if (role && role.toLowerCase() === "admin") roleValue = "Admin";
+  else if (role && role.toLowerCase() === "inspector") roleValue = "Inspector";
+  else roleValue = "Inspector"; // fallback
+
   db.query(
-    'INSERT INTO users (full_name, username, password, role) VALUES (?, ?, ?, ?)',
-    [fullName, username, password, role],
+    'INSERT INTO users (full_name, email, username, password, role) VALUES (?, ?, ?, ?, ?)',
+    [full_name, email, username, password, roleValue],
     (err, result) => {
-      if (err) return res.status(500).send(err);
-      res.json({ id: result.insertId, fullName, username, role });
+      if (err) {
+        console.error("Registration error:", err.sqlMessage);
+        return res.status(500).json({ message: "Registration failed", error: err.sqlMessage });
+      }
+      res.json({ id: result.insertId, full_name, email, username, role: roleValue });
     }
   );
 });
 
+
+
 // Login
 app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   db.query(
-    'SELECT * FROM users WHERE username = ? AND password = ?',
-    [username, password],
+    'SELECT * FROM users WHERE email = ? AND password = ?',
+    [email, password],
     (err, results) => {
       if (err) return res.status(500).send(err);
       if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
 
       const user = results[0];
-      res.json({ id: user.id, fullName: user.full_name, username: user.username, role: user.role });
+      res.json({ id: user.id, full_name: user.full_name, email: user.email, role: user.role });
     }
   );
 });
+
 
 
